@@ -1,0 +1,11 @@
+[BEGINVDF]
+Comment=Quicksave Slots im Round-Robin verfahren.
+BaseDir=.\
+VDFName=.\QuicksaveSlots.vdf
+[FILES]
+Ninja\QuicksaveSlots\* -r
+_Work\* -r
+[EXCLUDE]
+*_DEV.*
+[INCLUDE]
+[ENDVDF]
