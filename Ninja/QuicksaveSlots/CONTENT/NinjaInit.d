@@ -110,8 +110,14 @@ func int Ninja_QuicksaveSlots_IsValidNumber(var string str) {
     end;
     
     ch = STR_ToInt(str);
-    if ((ch < 1) || (ch > 20)) {
-        return 0;
+    if (GOTHIC_BASE_VERSION == 2) {
+        if ((ch < 0) || (ch > 20)) {
+            return 0;
+        };
+    } else {
+        if ((ch < 1) || (ch > 15)) {
+            return 0;
+        };
     };
     return 1;
 };
@@ -128,7 +134,7 @@ func void Ninja_QuicksaveSlots_ApplyIni() {
         MEM_SetGothOpt("NINJA_QUICKSAVESLOTS", "Enabled", "1");
 	};
     if (!MEM_GothOptExists("NINJA_QUICKSAVESLOTS", "Slots")) {
-        if (GOTHIC_BASE_VERSION == 2) { MEM_SetGothOpt("NINJA_QUICKSAVESLOTS", "Slots", "16,17,18,19,20,0"); }
+        if (GOTHIC_BASE_VERSION == 2) { MEM_SetGothOpt("NINJA_QUICKSAVESLOTS", "Slots", "15,16,17,18,19,20"); }
         else                          { MEM_SetGothOpt("NINJA_QUICKSAVESLOTS", "Slots", "10,11,12,13,14,15"); };
 	};
     if (!MEM_GothOptExists("NINJA_QUICKSAVESLOTS", "UseNumbering")) {
