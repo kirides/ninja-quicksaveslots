@@ -5,6 +5,51 @@ const int Ninja_QuicksaveSlots_NumSlots     = 0;
 const int _Ninja_QuicksaveSlots_G1_IsUnion  = 0;
 const int Ninja_QuicksaveSlots_SaveTotal    = 0;
 
+/*
+    Aus strings.d
+*/
+
+/*
+ * Replace first occurrence of needle in haystack and replace it
+ */
+func string Ninja_QuicksaveSlots_STR_ReplaceOnce(var string haystack, var string needle, var string replace) {
+    var zString zSh; zSh = _^(_@s(haystack));
+    var zString zSn; zSn = _^(_@s(needle));
+    if (!zSh.len) || (!zSn.len) {
+        return haystack;
+    };
+
+    var int startPos; startPos = STR_IndexOf(haystack, needle);
+    if (startPos == -1) {
+        return haystack;
+    };
+
+    var string destStr; destStr = "";
+
+    destStr = STR_Prefix(haystack, startPos);
+    destStr = ConcatStrings(destStr, replace);
+    destStr = ConcatStrings(destStr, STR_Substr(haystack, startPos+zSn.len, zSh.len-(startPos+zSn.len)));
+
+    return destStr;
+};
+
+
+/*
+ * Replace all occurrences of needle in haystack and replace them
+ */
+func string Ninja_QuicksaveSlots_STR_ReplaceAll(var string haystack, var string needle, var string replace) {
+    var string before; before = "";
+    while(!Hlp_StrCmp(haystack, before));
+        before = haystack;
+        haystack = Ninja_QuicksaveSlots_STR_ReplaceOnce(before, needle, replace);
+    end;
+    return haystack;
+};
+
+/*
+    Ende strings.d
+*/
+
 /// Gibt ein `oCSavegameInfo*` zurück
 func int Ninja_QuicksaveSlots_oCSavegameManger__GetSavegame(var int slotNr) {
     MEM_Info(ConcatStrings("QuicksaveSlots: GetSaveGame(", ConcatStrings(IntToString(slotNr), ")")));
@@ -35,6 +80,13 @@ func void Ninja_QuicksaveSlots_oCSavegameInfo__SetName(var int thisPtr, var stri
     
     const int oCSavegameInfo_name_offset = 64; // 0x40
     MEM_WriteString(thisPtr + oCSavegameInfo_name_offset, name);
+};
+
+
+func string Ninja_QuicksaveSlots_CleanSlotString(var string slot) {
+    var string clean; clean = slot;
+    clean = Ninja_QuicksaveSlots_STR_ReplaceAll(clean, " ", "");
+    return clean;
 };
 
 /// Gets the current save slot.
@@ -156,7 +208,7 @@ func void Ninja_QuicksaveSlots_ApplyIni() {
         Ninja_QuicksaveSlots_SaveTotal = 0;
     };
     Ninja_QuicksaveSlots_UseNumbering = !!STR_ToInt(MEM_GetGothOpt("NINJA_QUICKSAVESLOTS", "UseNumbering"));
-    Ninja_QuicksaveSlots_Slots        = MEM_GetGothOpt("NINJA_QUICKSAVESLOTS", "Slots");
+    Ninja_QuicksaveSlots_Slots        = Ninja_QuicksaveSlots_CleanSlotString(MEM_GetGothOpt("NINJA_QUICKSAVESLOTS", "Slots"));
     Ninja_QuicksaveSlots_NumSlots     = STR_SplitCount(Ninja_QuicksaveSlots_Slots, ",");
 
     if (Ninja_QuicksaveSlots_NumSlots == 0) { return; };
